@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Lookup</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .result {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      background: #eef;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Payment Code</h1>
+    <div id="result" class="result">Checking customer ID...</div>
+  </div>
+
+  <script>
+    function getCalledValueFromURL() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let calledValue = urlParams.get("called");
+      if (calledValue) {
+        return calledValue.replace(/:/g, "").toUpperCase(); // Normalize formatting
+      }
+      return null;
+    }
+
+    async function lookupCustomerId(calledValue) {
+      const sheetId = "1JwpWie2gQ4L23JUu27eAgep5bO83q700hvU63NMI42s"; 
+      const sheetName = "Inventory List";
+      const apiKey = "AIzaSyD_48ZrhEK9B38if-50afsNM6-XuW7vQqI";
+
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName)}?key=${apiKey}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const rows = data.values;
+        if (!rows || rows.length === 0) {
+          return "Sheet is empty or unavailable.";
+        }
+
+        for (let i = 1; i < rows.length; i++) {
+          const mac = rows[i][10] ? rows[i][10].replace(/:/g, "").toUpperCase() : "";
+          if (mac === calledValue) {
+            return rows[i][5] ? "11700986833" + rows[i][5] : "Customer ID not found in row.";
+          }
+        }
+
+        return "No matching MAC address found.";
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        return "Error accessing sheet.";
+      }
+    }
+
+    async function main() {
+      const resultDiv = document.getElementById("result");
+      const called = getCalledValueFromURL();
+
+      if (!called) {
+        resultDiv.innerHTML = "<span class='error'>No 'called' parameter in URL.</span>";
+        return;
+      }
+
+      const customerId = await lookupCustomerId(called);
+      resultDiv.textContent = `Customer ID: ${customerId}`;
+    }
+
+    main();
+  </script>
+</body>
+</html>
