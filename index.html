@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #ff69b4, #800080); /* pink and purple gradient */
+      background: linear-gradient(135deg, #ff69b4, #800080);
       color: #333;
       display: flex;
       justify-content: center;
@@ -76,7 +76,7 @@
   <script>
     function getCalledValueFromURL() {
       const urlParams = new URLSearchParams(window.location.search);
-      let calledValue = urlParams.get("called");
+      let calledValue = urlParams.get("called") || urlParams.get("mac"); // Support both ?called= and ?mac=
       if (calledValue) {
         return calledValue.replace(/:/g, "").toUpperCase(); // Normalize formatting
       }
@@ -118,7 +118,7 @@
       const called = getCalledValueFromURL();
 
       if (!called) {
-        resultDiv.innerHTML = "<span class='error'>No 'called' parameter in URL.</span>";
+        resultDiv.innerHTML = "<span class='error'>No 'called' or 'mac' parameter in URL.</span>";
         return;
       }
 
