@@ -149,6 +149,7 @@
           const mac = rows[i][10] ? rows[i][10].replace(/:/g, "").toUpperCase() : "";
           if (mac === macValue) {
             return rows[i][5] ? "11700986833" + rows[i][5] : "Customer ID not found in row.";
+            console.log(rows[i][5];
           }
         }
 
