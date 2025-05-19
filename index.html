@@ -6,27 +6,29 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f0f4f8;
+      background: linear-gradient(135deg, #ff69b4, #800080); /* pink and purple gradient */
       color: #333;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
 
     .container {
       background: white;
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
       text-align: center;
       width: 100%;
       max-width: 420px;
     }
 
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       margin-bottom: 1rem;
+      color: #800080;
     }
 
     .result {
@@ -40,12 +42,35 @@
     .error {
       color: red;
     }
+
+    .price {
+      margin-top: 1rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #d100a5;
+    }
+
+    .partners {
+      margin-top: 1.5rem;
+    }
+
+    .partners img {
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Payment Code</h1>
+    <h1>WiFi Access Expired</h1>
+    <div class="price">WiFi Price: R149</div>
     <div id="result" class="result">Checking customer ID...</div>
+
+    <div class="partners">
+      <p>You can pay here:</p>
+      <img src="partners.jpg" alt="Payment Partners">
+    </div>
   </div>
 
   <script>
@@ -98,7 +123,7 @@
       }
 
       const customerId = await lookupCustomerId(called);
-      resultDiv.textContent = `Customer ID: ${customerId}`;
+      resultDiv.textContent = `Payment Code: ${customerId}`;
     }
 
     main();
