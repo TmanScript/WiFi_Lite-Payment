@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Customer Lookup</title>
   <style>
     body {
@@ -71,7 +71,7 @@
     }
 
     .support a {
-      color: #25D366;
+      color: #25d366;
       text-decoration: none;
       font-weight: bold;
       display: inline-flex;
@@ -86,7 +86,7 @@
 <body>
   <div class="container">
     <!-- Logo -->
-    <img src="logo.jpeg" alt="Logo" class="logo">
+    <img src="logo.jpeg" alt="Logo" class="logo" />
 
     <h1>WiFi Access Expired</h1>
     <div class="price">WiFi Price: R149</div>
@@ -94,14 +94,21 @@
 
     <div class="partners">
       <p>You can pay here:</p>
-      <img src="partners.jpg" alt="Payment Partners">
+      <img src="partners.jpg" alt="Payment Partners" />
     </div>
 
     <!-- Support Contact Section -->
     <div class="support">
-      <p>Having troubles paying? Please <a href="https://wa.me/27831234567" target="_blank" class="whatsapp-link">
-        contact support <img src="https://img.icons8.com/color/20/000000/whatsapp--v1.png" alt="WhatsApp icon">
-      </a></p>
+      <p>
+        Having troubles paying? Please
+        <a href="https://wa.me/27831234567" target="_blank" class="whatsapp-link">
+          contact support
+          <img
+            src="https://img.icons8.com/color/20/000000/whatsapp--v1.png"
+            alt="WhatsApp icon"
+          />
+        </a>
+      </p>
     </div>
   </div>
 
@@ -113,12 +120,18 @@
       let called = params.get("called") || params.get("mac");
       if (called) return called.replace(/[:\-]/g, "").toUpperCase();
 
-      // 2. Try inside loginurl
+      // 2. Try inside loginurl (double decode)
       const loginurl = params.get("loginurl");
       if (loginurl) {
         try {
-          const decodedURL = decodeURIComponent(loginurl);
-          const innerParams = new URLSearchParams(decodedURL.split("?")[1]);
+          // Decode twice because the loginurl param is double encoded
+          const decodedOnce = decodeURIComponent(loginurl);
+          const decodedTwice = decodeURIComponent(decodedOnce);
+
+          const queryString = decodedTwice.split("?")[1];
+          if (!queryString) return null;
+
+          const innerParams = new URLSearchParams(queryString);
           let innerCalled = innerParams.get("called") || innerParams.get("mac");
           if (innerCalled) return innerCalled.replace(/[:\-]/g, "").toUpperCase();
         } catch (err) {
@@ -130,11 +143,13 @@
     }
 
     async function lookupCustomerId(macValue) {
-      const sheetId = "1JwpWie2gQ4L23JUu27eAgep5bO83q700hvU63NMI42s"; 
+      const sheetId = "1JwpWie2gQ4L23JUu27eAgep5bO83q700hvU63NMI42s";
       const sheetName = "Inventory List";
       const apiKey = "AIzaSyD_48ZrhEK9B38if-50afsNM6-XuW7vQqI";
 
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(sheetName)}?key=${apiKey}`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
+        sheetName
+      )}?key=${apiKey}`;
 
       try {
         const response = await fetch(url);
@@ -146,10 +161,11 @@
         }
 
         for (let i = 1; i < rows.length; i++) {
-          const mac = rows[i][10] ? rows[i][10].replace(/:/g, "").toUpperCase() : "";
+          const mac = rows[i][10]
+            ? rows[i][10].replace(/[:\-]/g, "").toUpperCase()
+            : "";
           if (mac === macValue) {
             return rows[i][5] ? "11700986833" + rows[i][5] : "Customer ID not found in row.";
-            console.log(rows[i][5];
           }
         }
 
