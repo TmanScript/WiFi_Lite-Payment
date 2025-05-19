@@ -1,73 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Customer Lookup</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #ff69b4, #800080);
+      color: #333;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      color: #333;
+      margin: 0;
     }
 
     .container {
-      background: #fff;
+      background: white;
       padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      text-align: center;
       width: 100%;
       max-width: 420px;
-      text-align: center;
-      animation: fadeIn 0.8s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
     }
 
     .logo {
-      width: 80px;
+      width: 90px;
       margin-bottom: 1rem;
     }
 
     h1 {
-      color: #800080;
       font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .price {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #d100a5;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
+      color: #800080;
     }
 
     .result {
-      background-color: #eef;
-      border-left: 4px solid #800080;
-      padding: 1rem;
-      font-size: 1.05rem;
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      padding: 0.75rem;
       border-radius: 8px;
-      margin-bottom: 1.5rem;
-      word-wrap: break-word;
+      background: #eef;
     }
 
     .error {
-      color: #e60000;
+      color: red;
+    }
+
+    .price {
+      margin-top: 1rem;
+      font-size: 1.3rem;
       font-weight: bold;
+      color: #d100a5;
     }
 
     .partners {
@@ -83,77 +68,69 @@
     .support {
       margin-top: 1.5rem;
       font-size: 0.95rem;
-      color: #444;
     }
 
     .support a {
       color: #25D366;
       text-decoration: none;
-      font-weight: 600;
+      font-weight: bold;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: opacity 0.2s ease;
-    }
-
-    .support a:hover {
-      opacity: 0.85;
     }
 
     .support img {
-      width: 20px;
-      height: 20px;
+      margin-left: 6px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="logo.avif" alt="Company Logo" class="logo" />
+    <!-- Logo -->
+    <img src="logo.jpeg" alt="Logo" class="logo">
+
     <h1>WiFi Access Expired</h1>
     <div class="price">WiFi Price: R149</div>
     <div id="result" class="result">Checking customer ID...</div>
 
     <div class="partners">
       <p>You can pay here:</p>
-      <img src="partners.jpg" alt="Payment Partners" />
+      <img src="partners.jpg" alt="Payment Partners">
     </div>
 
+    <!-- Support Contact Section -->
     <div class="support">
-      <p>
-        Having troubles paying?
-        <a href="https://wa.me/27831234567?text=Hi%2C%20I%20need%20help%20with%20my%20WiFi%20payment" target="_blank">
-          Contact Support
-          <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp" />
-        </a>
-      </p>
+      <p>Having troubles paying? Please <a href="https://wa.me/27831234567" target="_blank" class="whatsapp-link">
+        contact support <img src="https://img.icons8.com/color/20/000000/whatsapp--v1.png" alt="WhatsApp icon">
+      </a></p>
     </div>
   </div>
 
   <script>
-    function getCalledValueFromURL() {
-      const urlParams = new URLSearchParams(window.location.search);
-      let calledValue = urlParams.get("called") || urlParams.get("mac");
+    function getMacFromParams() {
+      const params = new URLSearchParams(window.location.search);
 
-      // If not directly in URL, check inside loginurl
-      if (!calledValue && urlParams.get("loginurl")) {
+      // 1. Try top-level ?called or ?mac
+      let called = params.get("called") || params.get("mac");
+      if (called) return called.replace(/[:\-]/g, "").toUpperCase();
+
+      // 2. Try inside loginurl
+      const loginurl = params.get("loginurl");
+      if (loginurl) {
         try {
-          const loginUrlDecoded = decodeURIComponent(decodeURIComponent(urlParams.get("loginurl")));
-          const innerParams = new URLSearchParams(loginUrlDecoded.split('?')[1]);
-          calledValue = innerParams.get("called");
-        } catch (e) {
-          console.error("Failed to parse loginurl for called value", e);
+          const decodedURL = decodeURIComponent(loginurl);
+          const innerParams = new URLSearchParams(decodedURL.split("?")[1]);
+          let innerCalled = innerParams.get("called") || innerParams.get("mac");
+          if (innerCalled) return innerCalled.replace(/[:\-]/g, "").toUpperCase();
+        } catch (err) {
+          console.error("Failed to parse loginurl", err);
         }
-      }
-
-      if (calledValue) {
-        return calledValue.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
       }
 
       return null;
     }
 
-    async function lookupCustomerId(calledValue) {
-      const sheetId = "1JwpWie2gQ4L23JUu27eAgep5bO83q700hvU63NMI42s";
+    async function lookupCustomerId(macValue) {
+      const sheetId = "1JwpWie2gQ4L23JUu27eAgep5bO83q700hvU63NMI42s"; 
       const sheetName = "Inventory List";
       const apiKey = "AIzaSyD_48ZrhEK9B38if-50afsNM6-XuW7vQqI";
 
@@ -162,15 +139,15 @@
       try {
         const response = await fetch(url);
         const data = await response.json();
-        const rows = data.values;
 
+        const rows = data.values;
         if (!rows || rows.length === 0) {
           return "Sheet is empty or unavailable.";
         }
 
         for (let i = 1; i < rows.length; i++) {
           const mac = rows[i][10] ? rows[i][10].replace(/:/g, "").toUpperCase() : "";
-          if (mac === calledValue) {
+          if (mac === macValue) {
             return rows[i][5] ? "11700986833" + rows[i][5] : "Customer ID not found in row.";
           }
         }
@@ -184,14 +161,14 @@
 
     async function main() {
       const resultDiv = document.getElementById("result");
-      const called = getCalledValueFromURL();
+      const mac = getMacFromParams();
 
-      if (!called) {
-        resultDiv.innerHTML = "<span class='error'>No 'called' or 'mac' parameter in URL.</span>";
+      if (!mac) {
+        resultDiv.innerHTML = "<span class='error'>Missing MAC address in URL.</span>";
         return;
       }
 
-      const customerId = await lookupCustomerId(called);
+      const customerId = await lookupCustomerId(mac);
       resultDiv.textContent = `Payment Code: ${customerId}`;
     }
 
