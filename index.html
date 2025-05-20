@@ -152,9 +152,9 @@
       const sheetName = "Inventory List";
       const apiKey = "AIzaSyD_48ZrhEK9B38if-50afsNM6-XuW7vQqI";
 
-      const url = https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
         sheetName
-      )}?key=${apiKey};
+      )}?key=${apiKey}`;
 
       try {
         const response = await fetch(url);
