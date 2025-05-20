@@ -1,200 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Customer Lookup</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #ff69b4, #800080);
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
 
-    .container {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-      text-align: center;
-      width: 100%;
-      max-width: 420px;
-    }
+  .container {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    width: 100%;
+    max-width: 420px;
+    transition: all 0.3s ease-in-out;
+  }
 
-    .logo {
-      width: 90px;
-      margin-bottom: 1rem;
-    }
+  .logo {
+    width: 80px;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
 
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      color: #800080;
-    }
+  h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: #6a11cb;
+  }
 
-    .result {
-      margin-top: 1.5rem;
-      font-size: 1.1rem;
-      padding: 0.75rem;
-      border-radius: 8px;
-      background: #eef;
-    }
+  .result {
+    margin-top: 1.25rem;
+    font-size: 1rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    background: #f4f6ff;
+    border: 1px solid #d3dbff;
+    font-weight: 500;
+  }
 
-    .error {
-      color: red;
-    }
+  .error {
+    color: #d32f2f;
+    font-weight: 600;
+  }
 
-    .price {
-      margin-top: 1rem;
-      font-size: 1.3rem;
-      font-weight: bold;
-      color: #d100a5;
-    }
+  .price {
+    margin-top: 1rem;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #d100a5;
+    background: #fff0f8;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0 0 6px rgba(209, 0, 165, 0.2);
+  }
 
-    .partners {
-      margin-top: 1.5rem;
-    }
+  .partners {
+    margin-top: 1.75rem;
+  }
 
-    .partners img {
-      width: 100%;
-      border-radius: 8px;
-      margin-top: 0.5rem;
-    }
+  .partners p {
+    margin: 0;
+    font-weight: 500;
+    color: #555;
+  }
 
-    .support {
-      margin-top: 1.5rem;
-      font-size: 0.95rem;
-    }
+  .partners img {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
 
-    .support a {
-      color: #25d366;
-      text-decoration: none;
-      font-weight: bold;
-      display: inline-flex;
-      align-items: center;
-    }
+  .support {
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    color: #444;
+  }
 
-    .support img {
-      margin-left: 6px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <!-- Logo -->
-    <img src="logo.jpeg" alt="Logo" class="logo" />
+  .support a {
+    color: #25d366;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease-in-out;
+  }
 
-    <h1>WiFi Access Expired</h1>
-    <div class="price">Amount Due: R149</div>
-    <div id="result" class="result">Checking customer ID...</div>
+  .support a:hover {
+    border-color: #25d366;
+  }
 
-    <div class="partners">
-      <p>You can pay here:</p>
-      <img src="partners.jpg" alt="Payment Partners" />
-    </div>
+  .support img {
+    margin-left: 6px;
+    transition: transform 0.2s ease-in-out;
+  }
 
-    <!-- Support Contact Section -->
-    <div class="support">
-      <p>
-  Having troubles paying? Please
-  <a
-    href="https://wa.me/27732125406?text=%2F5G-Support"
-    target="_blank"
-    class="whatsapp-link"
-  >
-    contact support
-    <img
-      src="https://img.icons8.com/color/20/000000/whatsapp--v1.png"
-      alt="WhatsApp icon"
-    />
-  </a>
-</p>
-
-    </div>
-  </div>
-
-  <script>
-    function getMacFromParams() {
-      const params = new URLSearchParams(window.location.search);
-
-      // 1. Try top-level ?called or ?mac
-      let called = params.get("called") || params.get("mac");
-      if (called) return called.replace(/[:\-]/g, "").toUpperCase();
-
-      // 2. Try inside loginurl (double decode)
-      const loginurl = params.get("loginurl");
-      if (loginurl) {
-        try {
-          // Decode twice because the loginurl param is double encoded
-          const decodedOnce = decodeURIComponent(loginurl);
-          const decodedTwice = decodeURIComponent(decodedOnce);
-
-          const queryString = decodedTwice.split("?")[1];
-          if (!queryString) return null;
-
-          const innerParams = new URLSearchParams(queryString);
-          let innerCalled = innerParams.get("called") || innerParams.get("mac");
-          if (innerCalled) return innerCalled.replace(/[:\-]/g, "").toUpperCase();
-        } catch (err) {
-          console.error("Failed to parse loginurl", err);
-        }
-      }
-
-      return null;
-    }
-
-    async function lookupCustomerId(macValue) {
-      const sheetId = "1JwpWie2gQ4L23JUu27eAgep5bO83q700hvU63NMI42s";
-      const sheetName = "Inventory List";
-      const apiKey = "AIzaSyD_48ZrhEK9B38if-50afsNM6-XuW7vQqI";
-
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
-        sheetName
-      )}?key=${apiKey}`;
-
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        const rows = data.values;
-        if (!rows || rows.length === 0) {
-          return "Sheet is empty or unavailable.";
-        }
-
-        for (let i = 1; i < rows.length; i++) {
-          const mac = rows[i][10]
-            ? rows[i][10].replace(/[:\-]/g, "").toUpperCase()
-            : "";
-          if (mac === macValue) {
-            return rows[i][5] ? "11700986833" + rows[i][5] : "Customer ID not found in row.";
-          }
-        }
-
-        return "No matching MAC address found.";
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        return "Error accessing sheet.";
-      }
-    }
-
-    async function main() {
-      const resultDiv = document.getElementById("result");
-      const mac = getMacFromParams();
-
-      if (!mac) {
-        resultDiv.innerHTML = "<span class='error'>Missing MAC address in URL.</span>";
-        return;
-      }
-
-      const customerId = await lookupCustomerId(mac);
-      resultDiv.textContent = `Payment Code: ${customerId}`;
-    }
-
-    main();
-  </script>
-</body>
-</html>
+  .support a:hover img {
+    transform: scale(1.1);
+  }
+</style>
