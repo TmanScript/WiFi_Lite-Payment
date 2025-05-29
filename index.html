@@ -26,12 +26,11 @@
     }
 
     .logo {
-  width: 140px; 
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 1rem;
-}
-
+      width: 140px;
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 1rem;
+    }
 
     h1 {
       font-size: 1.8rem;
@@ -189,6 +188,12 @@
 
       const customerId = await lookupCustomerId(mac);
       resultDiv.textContent = `Payment Code: ${customerId}`;
+
+      if (customerId && !customerId.startsWith("Error") && !customerId.startsWith("No") && !customerId.startsWith("Sheet") && !customerId.startsWith("Customer ID")) {
+        const linkPara = document.createElement("p");
+        linkPara.innerHTML = `Click the link to pay now: <a href="https://payat.io/qr/${customerId}" target="_blank">https://payat.io/qr/${customerId}</a>`;
+        resultDiv.appendChild(linkPara);
+      }
     }
 
     main();
