@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Customer Lookup</title>
+  <title>Wi-Fi Service Update</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -35,46 +35,39 @@
       margin-bottom: 1rem;
       color: #800080;
     }
-    .result {
-      margin-top: 1.5rem;
-      font-size: 1.1rem;
-      padding: 0.75rem;
+    .notice {
+      margin-top: 1rem;
+      font-size: 1.05rem;
+      line-height: 1.55;
+      text-align: left;
+      padding: 1rem;
       border-radius: 8px;
       background: #eef;
-      word-break: break-word;
     }
-    .error {
-      color: #c00;
+    .notice p {
+      margin: 0 0 0.75rem;
     }
-    .price {
-      margin-top: 1rem;
-      font-size: 1.3rem;
+    .notice p:last-child {
+      margin-bottom: 0;
+    }
+    .outcome {
+      margin: 0.75rem 0;
+      padding: 0.75rem;
+      border-radius: 8px;
+      background: #fff;
+      border-left: 4px solid #d100a5;
+    }
+    .outcome strong {
+      color: #800080;
+    }
+    .fee {
       font-weight: bold;
       color: #d100a5;
     }
-    .paycode {
-      font-size: 1.4rem;
+    .signoff {
+      margin-top: 1.25rem;
       font-weight: bold;
-      letter-spacing: 1px;
       color: #800080;
-    }
-    .paybtn {
-      display: inline-block;
-      margin-top: 0.75rem;
-      padding: 0.6rem 1.2rem;
-      background: #d100a5;
-      color: #fff;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .partners {
-      margin-top: 1.5rem;
-    }
-    .partners img {
-      width: 100%;
-      border-radius: 8px;
-      margin-top: 0.5rem;
     }
     .support {
       margin-top: 1.5rem;
@@ -100,19 +93,36 @@
 <body>
   <div class="container">
     <img src="logo.png" alt="Logo" class="logo" />
-    <h1>WiFi Access Expired</h1>
-    <div class="price">Amount Due: R149</div>
+    <h1>Wi-Fi Service Update</h1>
 
-    <div id="result" class="result">Checking customer ID...</div>
+    <div class="notice">
+      <p>
+        Due to low network coverage in some areas, the free Wi-Fi devices have
+        not been performing reliably. Our technicians will be visiting soon to
+        test the network signal at your location.
+      </p>
 
-    <div class="partners">
-      <p>You can pay here:</p>
-      <img src="partners.jpg" alt="Payment Partners" />
+      <div class="outcome">
+        <strong>If the signal is good:</strong> you keep your Wi-Fi device and
+        will be billed <span class="fee">R149</span> going forward.
+      </div>
+
+      <div class="outcome">
+        <strong>If the signal is too weak:</strong> we will collect the device
+        and end support for it.
+      </div>
+
+      <p>
+        We will contact you soon to arrange the technician's visit. Thank you
+        for your understanding!
+      </p>
+
+      <p class="signoff">— Umoja Connect</p>
     </div>
 
     <div class="support">
       <p>
-        Having troubles paying? Please
+        Have questions? Please
         <a
           href="https://wa.me/27732125406?text=%2F5G-Support"
           target="_blank"
@@ -133,51 +143,11 @@
 
   <script>
     // ---------------------------------------------------------------
-    // CONFIG
+    // This page is now a notice only - no payment lookup is performed.
+    // We still read the CPE MAC from the CoovaChilli redirect so the
+    // device shows in the small diagnostic line (useful for support
+    // calls and for confirming which router served the page).
     // ---------------------------------------------------------------
-    // CPE200 devices live in the "CPE200" tab of the "NOC Monotoring" sheet.
-    // The old code pointed at "Inventory List", which only contains the
-    // 5G / G5010 routers (MACs beginning 7C45D0...) - no CPE200 MAC is
-    // in that tab, so every CPE200 lookup failed.
-    //
-    // "CPE200" tab column layout:
-    //   A Status | B Id | C Barcode (= MAC) | D Serial | E Assigned |
-    //   F Mark   | G Customer Id | ...
-    //
-    // We request only C:G, so within each returned row:
-    //   row[0] = C = Barcode / MAC
-    //   row[4] = G = Customer Id
-    const SHEET_ID   = "1JwpWie2gQ4L23JUu27eAgep5bO83q700hvU63NMI42s";
-    const SHEET_TAB  = "CPE200";
-    const RANGE      = "C2:G2000";
-    const API_KEY    = "AIzaSyD_48ZrhEK9B38if-50afsNM6-XuW7vQqI";
-
-    const COL_MAC         = 0; // column C within the C:G window
-    const COL_CUSTOMER_ID = 4; // column G within the C:G window
-
-    const PAYCODE_PREFIX = "11700986833";
-    const PAYAT_BASE     = "https://payat.io/qr/";
-
-    // ---------------------------------------------------------------
-    // MAC NORMALISATION
-    // ---------------------------------------------------------------
-    // The sheet is dirty. Real values seen in the Barcode column include:
-    //   "7C273C1261D4"        <- clean
-    //   "MAC: 7C273C118BC8"   <- "MAC:" label prefix
-    //   "MAC:44DIFAD8BF04"    <- prefix + letter I typed instead of digit 1
-    //   "7C27:3C11B2C4"       <- stray colon
-    //   "7C273C125A558"       <- 13 chars, corrupt
-    //   "7C273C125V2C"        <- non-hex char, corrupt
-    //   "7C27C125EBC"         <- too short, corrupt
-    //
-    // Order matters here. The "MAC:" label MUST be stripped before removing
-    // non-hex characters, because A and C are themselves valid hex digits --
-    // a naive strip turns "MAC: 7C273C118BC8" into "AC7C273C118BC8" (14 chars)
-    // and the row is silently lost.
-    //
-    // Chilli sends the MAC as "7c-27-3c-12-61-d4" or "7C:27:3C:12:61:D4",
-    // so separators are stripped and everything is uppercased.
-    // Anything that isn't exactly 12 hex chars is rejected rather than guessed.
     function normaliseMac(value) {
       if (!value) return null;
       let s = String(value).toUpperCase().trim();
@@ -187,11 +157,6 @@
       return /^[0-9A-F]{12}$/.test(cleaned) ? cleaned : null;
     }
 
-    // ---------------------------------------------------------------
-    // READ THE CPE MAC FROM THE CHILLI REDIRECT URL
-    // ---------------------------------------------------------------
-    // CoovaChilli passes the AP/NAS MAC as "called". It may arrive directly,
-    // or nested (double-encoded) inside the "loginurl" parameter.
     function getMacFromParams() {
       const params = new URLSearchParams(window.location.search);
 
@@ -219,101 +184,10 @@
       return null;
     }
 
-    // ---------------------------------------------------------------
-    // SHEET LOOKUP
-    // ---------------------------------------------------------------
-    // Returns { ok: true, customerId } or { ok: false, reason }
-    async function lookupCustomerId(macValue) {
-      const url =
-        "https://sheets.googleapis.com/v4/spreadsheets/" +
-        SHEET_ID +
-        "/values/" +
-        encodeURIComponent(SHEET_TAB + "!" + RANGE) +
-        "?key=" +
-        API_KEY;
-
-      let data;
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          return { ok: false, reason: "Lookup service unavailable (" + response.status + ")." };
-        }
-        data = await response.json();
-      } catch (err) {
-        console.error("Error fetching sheet:", err);
-        return { ok: false, reason: "Could not reach the lookup service." };
-      }
-
-      const rows = data.values;
-      if (!rows || rows.length === 0) {
-        return { ok: false, reason: "Customer list is empty." };
-      }
-
-      for (let i = 0; i < rows.length; i++) {
-        const rowMac = normaliseMac(rows[i][COL_MAC]);
-        if (rowMac && rowMac === macValue) {
-          const raw = rows[i][COL_CUSTOMER_ID];
-          const customerId = raw ? String(raw).trim() : "";
-
-          // "0" (and blank) means the unit is stock / returned / unassigned,
-          // not a billable customer. Do not generate a payment code for it.
-          if (!customerId || customerId === "0") {
-            return { ok: false, reason: "This device is not linked to a customer account yet." };
-          }
-          return { ok: true, customerId: customerId };
-        }
-      }
-      return { ok: false, reason: "This device was not found on our system." };
+    const mac = getMacFromParams();
+    if (mac) {
+      document.getElementById("diag").textContent = "Device: " + mac;
     }
-
-    // ---------------------------------------------------------------
-    // RENDER
-    // ---------------------------------------------------------------
-    async function main() {
-      const resultDiv = document.getElementById("result");
-      const diagDiv = document.getElementById("diag");
-
-      const mac = getMacFromParams();
-      if (!mac) {
-        resultDiv.innerHTML =
-          "<span class='error'>Could not identify your device.</span>" +
-          "<br />Please contact support using the link below.";
-        return;
-      }
-
-      diagDiv.textContent = "Device: " + mac;
-      resultDiv.textContent = "Looking up your account...";
-
-      const result = await lookupCustomerId(mac);
-
-      if (!result.ok) {
-        resultDiv.innerHTML = "<span class='error'>" + result.reason + "</span>";
-        return;
-      }
-
-      const payCode = PAYCODE_PREFIX + result.customerId;
-
-      resultDiv.innerHTML = "";
-
-      const label = document.createElement("div");
-      label.textContent = "Payment Code";
-      resultDiv.appendChild(label);
-
-      const code = document.createElement("div");
-      code.className = "paycode";
-      code.textContent = payCode;
-      resultDiv.appendChild(code);
-
-      const link = document.createElement("a");
-      link.className = "paybtn";
-      link.href = PAYAT_BASE + encodeURIComponent(payCode);
-      link.target = "_blank";
-      link.rel = "noopener";
-      link.textContent = "Pay Now";
-      resultDiv.appendChild(link);
-    }
-
-    main();
   </script>
 </body>
 </html>
