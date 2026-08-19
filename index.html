@@ -16,9 +16,8 @@
       --line: #ead8ea;
       --success: #128c4a;
       --success-dark: #0b6b38;
-      --page: #f7f5f8;
-      --page-deep: #eee9f0;
-      --shadow: 0 16px 44px rgba(48, 17, 56, 0.16);
+      --page: #f5f6f8;
+      --shadow: 0 14px 36px rgba(37, 27, 40, 0.14);
     }
 
     * {
@@ -27,25 +26,15 @@
 
     body {
       font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: linear-gradient(180deg, var(--page) 0%, var(--page-deep) 100%);
+      background: var(--page);
       color: var(--ink);
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      justify-content: center;
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      padding: clamp(0.75rem, 3vh, 1.5rem) 1rem 1rem;
-      position: relative;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0 0 auto;
-      height: 11.75rem;
-      background: linear-gradient(135deg, #34243a 0%, #6f1b73 62%, #c51f91 100%);
-      pointer-events: none;
+      padding: 1rem;
     }
 
     .container {
@@ -55,26 +44,24 @@
       box-shadow: var(--shadow);
       overflow: hidden;
       width: 100%;
-      max-width: 580px;
-      position: relative;
-      z-index: 1;
+      max-width: 480px;
     }
 
     .card-header {
-      padding: 1.3rem clamp(1.1rem, 5vw, 2rem) 0.9rem;
+      padding: 1.35rem clamp(1.1rem, 5vw, 1.8rem) 0.85rem;
       text-align: center;
       border-top: 5px solid var(--accent);
     }
 
     .card-body {
-      padding: 0 clamp(1.1rem, 5vw, 2rem) 1.35rem;
+      padding: 0 clamp(1.1rem, 5vw, 1.8rem) 1.35rem;
     }
 
     .logo {
       width: 132px;
       max-width: 100%;
       height: auto;
-      margin-bottom: 0.9rem;
+      margin-bottom: 0.8rem;
     }
 
     .status {
@@ -82,7 +69,7 @@
       align-items: center;
       justify-content: center;
       gap: 0.4rem;
-      margin-bottom: 0.85rem;
+      margin-bottom: 0.75rem;
       padding: 0.42rem 0.75rem;
       border: 1px solid var(--line);
       border-radius: 999px;
@@ -104,9 +91,9 @@
     }
 
     h1 {
-      font-size: 1.72rem;
+      font-size: 1.62rem;
       line-height: 1.12;
-      margin: 0 0 0.7rem;
+      margin: 0 0 0.55rem;
       color: var(--brand-dark);
       letter-spacing: 0;
     }
@@ -116,7 +103,7 @@
       max-width: 30rem;
       color: var(--muted);
       font-size: 0.98rem;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
     .notice {
@@ -139,25 +126,11 @@
       margin-bottom: 0;
     }
 
-    .detail {
-      margin: 1rem 0;
-      padding: 0.95rem 1rem;
-      border-radius: 8px;
-      background: #ffffff;
-      border: 1px solid var(--line);
-      border-left: 4px solid var(--accent);
-      box-shadow: 0 10px 28px rgba(74, 23, 77, 0.07);
-    }
-
-    .detail strong {
-      color: var(--brand);
-    }
-
     .actions {
       display: grid;
       grid-template-columns: 1fr;
       gap: 0.8rem;
-      margin-top: 1.25rem;
+      margin-top: 1rem;
     }
 
     .button {
@@ -224,16 +197,10 @@
     }
 
     .support-note {
-      margin: 1rem 0 0;
+      margin: 0.85rem 0 0;
       color: var(--muted);
       font-size: 0.9rem;
       line-height: 1.5;
-    }
-
-    .signoff {
-      margin-top: 1.25rem;
-      font-weight: 800;
-      color: var(--brand);
     }
 
     .diag {
@@ -243,20 +210,13 @@
       text-align: center;
     }
 
-    .fineprint {
-      margin: 0.9rem 0 0;
-      color: var(--muted);
-      font-size: 0.86rem;
-      text-align: center;
-    }
-
     @media (min-width: 480px) {
       .actions {
         grid-template-columns: 1fr 1fr;
       }
 
       h1 {
-        font-size: 2.15rem;
+        font-size: 1.9rem;
       }
     }
   </style>
@@ -265,25 +225,18 @@
   <div class="container">
     <div class="card-header">
       <img src="logo.png" alt="Umoja Connect" class="logo" />
-      <div class="status">Account action required</div>
-      <h1>Your Wi-Fi access has been suspended</h1>
+      <div class="status">Payment reminder</div>
+      <h1>Your Wi-Fi is paused</h1>
       <p class="summary">
-        Your connection is currently unavailable because your account has an unpaid bill.
+        Please pay your outstanding balance to reconnect.
       </p>
     </div>
 
     <div class="card-body">
       <div class="notice">
         <p>
-          Please pay the outstanding amount through your usual Umoja Connect
-          payment method to restore your Wi-Fi service. Once your payment has
-          been received and confirmed, access can be reconnected.
+        Contact Umoja Connect if you need help making payment.
         </p>
-
-        <div class="detail">
-          <strong>Having trouble paying?</strong> Contact Umoja Connect support and
-          we will help you confirm your balance, payment reference, or next step.
-        </div>
 
         <div class="actions" aria-label="Support contact options">
           <a
@@ -313,15 +266,10 @@
         </div>
 
         <p class="support-note">
-          Keep your payment reference or account details ready when contacting
-          support. If the WhatsApp button does not open, send a message manually
-          to 073 212 5406.
+          Have your payment reference or account details ready.
         </p>
-
-        <p class="signoff">Umoja Connect</p>
       </div>
 
-      <p class="fineprint">Secure service notice for Umoja Connect customers.</p>
       <div id="diag" class="diag"></div>
     </div>
   </div>
