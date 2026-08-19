@@ -203,13 +203,6 @@
       line-height: 1.5;
     }
 
-    .diag {
-      margin-top: 1rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-align: center;
-    }
-
     @media (min-width: 480px) {
       .actions {
         grid-template-columns: 1fr 1fr;
@@ -235,7 +228,8 @@
     <div class="card-body">
       <div class="notice">
         <p>
-        Contact Umoja Connect if you need help making payment.
+          Payment restores access automatically. Contact Umoja Connect if you
+          need help making payment.
         </p>
 
         <div class="actions" aria-label="Support contact options">
@@ -269,65 +263,7 @@
           Have your payment reference or account details ready.
         </p>
       </div>
-
-      <div id="diag" class="diag"></div>
     </div>
   </div>
-
-  <script>
-    // ---------------------------------------------------------------
-    // This page is now a notice only - no payment lookup is performed.
-    // We still read the CPE MAC from the CoovaChilli redirect so the
-    // device shows in the small diagnostic line (useful for support
-    // calls and for confirming which router served the page).
-    // ---------------------------------------------------------------
-    function normaliseMac(value) {
-      if (!value) return null;
-      let s = String(value).toUpperCase().trim();
-      s = s.replace(/^MAC\s*[:\-]?\s*/, "");        // drop a leading "MAC:" label
-      s = s.replace(/I/g, "1").replace(/O/g, "0");  // recover known typos: I->1, O->0
-      const cleaned = s.replace(/[^0-9A-F]/g, "");  // drop separators / junk
-      return /^[0-9A-F]{12}$/.test(cleaned) ? cleaned : null;
-    }
-
-    function getMacFromParams() {
-      const params = new URLSearchParams(window.location.search);
-
-      const directValues = [params.get("called"), params.get("mac")];
-      for (const value of directValues) {
-        const m = normaliseMac(value);
-        if (m) return m;
-      }
-
-      const loginurl = params.get("loginurl");
-      if (loginurl) {
-        try {
-          let decoded = decodeURIComponent(loginurl);
-          try { decoded = decodeURIComponent(decoded); } catch (e) { /* single-encoded */ }
-          const qs = decoded.split("?")[1];
-          if (qs) {
-            const inner = new URLSearchParams(qs);
-            const nestedValues = [inner.get("called"), inner.get("mac")];
-            for (const value of nestedValues) {
-              const m = normaliseMac(value);
-              if (m) return m;
-            }
-          }
-        } catch (err) {
-          console.error("Failed to parse loginurl", err);
-        }
-      }
-      return null;
-    }
-
-    function maskMac(value) {
-      return value ? "ending " + value.slice(-4) : "";
-    }
-
-    const mac = getMacFromParams();
-    if (mac) {
-      document.getElementById("diag").textContent = "Device " + maskMac(mac);
-    }
-  </script>
 </body>
 </html>
