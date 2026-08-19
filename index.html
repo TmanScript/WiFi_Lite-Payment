@@ -16,7 +16,6 @@
       --line: #ead8ea;
       --success: #128c4a;
       --success-dark: #0b6b38;
-      --page: #f5f6f8;
       --shadow: 0 14px 36px rgba(37, 27, 40, 0.14);
     }
 
@@ -26,15 +25,50 @@
 
     body {
       font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--page);
+      background-color: #100e0b;
       color: var(--ink);
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .aura-bg {
+      position: relative;
+      overflow: hidden;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      margin: 0;
       padding: 1rem;
+    }
+
+    .aura-layer-1,
+    .aura-layer-2 {
+      position: absolute;
+      inset: 0;
+      transform: translateZ(0);
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .aura-layer-1 {
+      background: radial-gradient(ellipse 89% 99% at 50% -38%, rgba(0,0,0,0) 0%, rgb(30,32,35) 38%, rgb(45,70,115) 70%, rgb(142,123,227) 90%, rgb(248,104,196) 100%);
+      mix-blend-mode: hard-light;
+      filter: blur(125px);
+      opacity: 0.5;
+    }
+
+    .aura-layer-2 {
+      background: radial-gradient(ellipse 95% 105% at 50% -34%, rgba(0,0,0,0.15) 0%, rgb(30,32,35) 42%, rgb(55,82,135) 74%, rgb(150,126,228) 92%, rgb(246,108,198) 100%);
+      mix-blend-mode: soft-light;
+      filter: blur(200px);
+    }
+
+    .page-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
     }
 
     .container {
@@ -212,56 +246,73 @@
         font-size: 1.9rem;
       }
     }
+
+    @media (min-width: 768px) {
+      .aura-layer-1 {
+        filter: blur(180px);
+      }
+
+      .aura-layer-2 {
+        filter: blur(260px);
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="card-header">
-      <img src="logo.png" alt="Umoja Connect" class="logo" />
-      <div class="status">Payment reminder</div>
-      <h1>Your Wi-Fi is paused</h1>
-      <p class="summary">
-        Please pay your outstanding balance to reconnect.
-      </p>
-    </div>
+  <div class="aura-bg">
+    <div class="aura-layer-1" aria-hidden="true"></div>
+    <div class="aura-layer-2" aria-hidden="true"></div>
 
-    <div class="card-body">
-      <div class="notice">
-        <p>
-          Payment restores access automatically. Contact Umoja Connect if you
-          need help making payment.
-        </p>
-
-        <div class="actions" aria-label="Support contact options">
-          <a
-            class="button whatsapp"
-            href="https://wa.me/27732125406?text=Hi%20Umoja%20Connect%2C%20I%20need%20help%20with%20my%20unpaid%20Wi-Fi%20bill."
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-              <path d="M4.2 19.8l1.05-3.85A8.16 8.16 0 013.95 11.5 8.05 8.05 0 1112 19.55a8.3 8.3 0 01-3.9-.98L4.2 19.8z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" />
-              <path d="M9.1 7.8c-.25-.55-.5-.56-.74-.57h-.63c-.22 0-.57.08-.86.4-.3.32-1.13 1.1-1.13 2.68s1.16 3.12 1.32 3.33c.16.21 2.24 3.57 5.53 4.86 2.73 1.08 3.29.86 3.88.8.6-.05 1.93-.78 2.2-1.54.27-.76.27-1.41.19-1.54-.08-.14-.3-.22-.63-.38l-1.86-.91c-.28-.11-.49-.17-.69.17-.2.33-.79 1.02-.97 1.22-.18.2-.36.23-.67.08-.31-.16-1.29-.48-2.46-1.52-.91-.81-1.52-1.81-1.7-2.12-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.32-.52.1-.21.05-.39-.03-.55L9.1 7.8z" fill="currentColor" />
-            </svg>
-            <span class="button-label">
-              <span>WhatsApp</span>
-              <small>073 212 5406</small>
-            </span>
-          </a>
-          <a class="button call" href="tel:+27108805324">
-            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-              <path d="M8.35 4.8l1.05 3.05c.19.55.05 1.16-.36 1.57l-1 1a11.8 11.8 0 005.54 5.54l1-1c.41-.41 1.02-.55 1.57-.36l3.05 1.05c.62.21 1.03.79 1.03 1.44v1.66c0 .82-.66 1.48-1.48 1.48C10.47 20.23 3.77 13.53 3.77 5.25c0-.82.66-1.48 1.48-1.48h1.66c.65 0 1.23.41 1.44 1.03z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <span class="button-label">
-              <span>Call</span>
-              <small>010 880 5324</small>
-            </span>
-          </a>
+    <div class="page-content">
+      <div class="container">
+        <div class="card-header">
+          <img src="logo.png" alt="Umoja Connect" class="logo" />
+          <div class="status">Payment reminder</div>
+          <h1>Your Wi-Fi is paused</h1>
+          <p class="summary">
+            Please pay your outstanding balance to reconnect.
+          </p>
         </div>
 
-        <p class="support-note">
-          Have your payment reference or account details ready.
-        </p>
+        <div class="card-body">
+          <div class="notice">
+            <p>
+              Payment restores access automatically. Contact Umoja Connect if you
+              need help making payment.
+            </p>
+
+            <div class="actions" aria-label="Support contact options">
+              <a
+                class="button whatsapp"
+                href="https://wa.me/27732125406?text=Hi%20Umoja%20Connect%2C%20I%20need%20help%20with%20my%20unpaid%20Wi-Fi%20bill."
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+                  <path d="M4.2 19.8l1.05-3.85A8.16 8.16 0 013.95 11.5 8.05 8.05 0 1112 19.55a8.3 8.3 0 01-3.9-.98L4.2 19.8z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" />
+                  <path d="M9.1 7.8c-.25-.55-.5-.56-.74-.57h-.63c-.22 0-.57.08-.86.4-.3.32-1.13 1.1-1.13 2.68s1.16 3.12 1.32 3.33c.16.21 2.24 3.57 5.53 4.86 2.73 1.08 3.29.86 3.88.8.6-.05 1.93-.78 2.2-1.54.27-.76.27-1.41.19-1.54-.08-.14-.3-.22-.63-.38l-1.86-.91c-.28-.11-.49-.17-.69.17-.2.33-.79 1.02-.97 1.22-.18.2-.36.23-.67.08-.31-.16-1.29-.48-2.46-1.52-.91-.81-1.52-1.81-1.7-2.12-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.32-.52.1-.21.05-.39-.03-.55L9.1 7.8z" fill="currentColor" />
+                </svg>
+                <span class="button-label">
+                  <span>WhatsApp</span>
+                  <small>073 212 5406</small>
+                </span>
+              </a>
+              <a class="button call" href="tel:+27108805324">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+                  <path d="M8.35 4.8l1.05 3.05c.19.55.05 1.16-.36 1.57l-1 1a11.8 11.8 0 005.54 5.54l1-1c.41-.41 1.02-.55 1.57-.36l3.05 1.05c.62.21 1.03.79 1.03 1.44v1.66c0 .82-.66 1.48-1.48 1.48C10.47 20.23 3.77 13.53 3.77 5.25c0-.82.66-1.48 1.48-1.48h1.66c.65 0 1.23.41 1.44 1.03z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span class="button-label">
+                  <span>Call</span>
+                  <small>010 880 5324</small>
+                </span>
+              </a>
+            </div>
+
+            <p class="support-note">
+              Have your payment reference or account details ready.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
